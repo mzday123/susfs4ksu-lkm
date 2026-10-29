@@ -292,7 +292,7 @@ jobs:
           elif [[ ${{ github.event.inputs.ksu_type }} == "finasu" ]]; then
             echo "正在配置FinaSU..."
             git clone https://github.com/LyraVoid/FinaSU.git KernelSU
-            ( cd KernelSU && git checkout v1.3.1 && echo "FinaSU checked out: $(git describe --tags --always 2>/dev/null)" )
+            ( cd KernelSU && git checkout v1.3.2 && echo "FinaSU checked out: $(git describe --tags --always 2>/dev/null)" )
             # FinaSU 内核侧 in-tree 集成：软链驱动目录并挂载 Makefile / Kconfig
             DRIVER_DIR="$PWD/common/drivers"
             ln -sfn "$(realpath --relative-to="$DRIVER_DIR" "$PWD/KernelSU/kernel")" "$DRIVER_DIR/kernelsu"
@@ -309,12 +309,12 @@ jobs:
             if [ -z "$REL_URL" ]; then
               echo "::warning::最新 Release 资产读取为空，重试 tags/v1.2.1"
               sleep 3
-              REL_JSON=$(curl -s --fail --max-time 30 "https://api.github.com/repos/LyraVoid/FinaSU/releases/tags/v1.3.1")
+              REL_JSON=$(curl -s --fail --max-time 30 "https://api.github.com/repos/LyraVoid/FinaSU/releases/tags/v1.3.2")
               REL_URL=$(printf '%s' "$REL_JSON" | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(a['browser_download_url'] for a in d.get('assets',[]) if a['name'].endswith('.apk')))" 2>/dev/null || true)
             fi
             if [ -z "$REL_URL" ]; then
               echo "::warning::API 仍无 APK 资产，使用 v1.3.0 硬编码下载地址"
-              REL_URL="https://github.com/LyraVoid/FinaSU/releases/download/v1.3.1/FinaSU_v1.3.1_33084-release.apk"
+              REL_URL="https://github.com/LyraVoid/FinaSU/releases/download/v1.3.2/FinaSU_v1.3.2_33090-release.apk"
             fi
             curl -sL --fail --retry 3 --max-time 300 -o "$REL_APK" "$REL_URL" || { echo "::error::下载 FinaSU 管理器 APK 失败"; exit 1; }
             CERT_INFO=$(python3 ./extract_manager_cert.py "$REL_APK" | head -n1)
